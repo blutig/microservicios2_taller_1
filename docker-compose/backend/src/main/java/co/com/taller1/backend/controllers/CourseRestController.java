@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,6 +22,7 @@ import co.com.taller1.backend.persistence.repositories.CourseRepository;
  *
  */
 @RestController
+@CrossOrigin
 @RequestMapping(value = "/rest/course", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 public class CourseRestController {
 
