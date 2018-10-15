@@ -1,10 +1,9 @@
 version: "3.5"
-services: 
+services:
 #  mysql:
 #    #image: mysql:5.7
 #    build: mysql/
-#    container_name: mysql-taller1
-#    hostname: host-mysql-taller1
+#    container_name: cmysql-taller1
 #    environment:
 #      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
 #      MYSQL_DATABASE: taller1
@@ -24,25 +23,38 @@ services:
     build: backend/
     networks:
       - back_net
-#    ports:
-#     - "8080:8080"
 #    depends_on:
-#     - mysql
+#      - mysql
 
   frontend:
     build: frontend/
     networks:
+      - front_net
+    depends_on:
+      - backend
+
+
+#https://dev.to/domysee/setting-up-a-reverse-proxy-with-nginx-and-docker-compose-29jg
+#https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx
+
+  balanceproxy:
+    build: balanceproxy/
+    container_name: cbp-taller1
+    networks:
       - back_net
       - front_net
-#    ports:
-#     - "80:80"
+    ports:
+      - "80:80"
+      - "443:443"
     depends_on:
-     - backend
+      - frontend
 
 
 volumes:
   mysql_data:
- 
+#  logs_data:
+
+
 networks:
   back_net:
     driver: bridge
