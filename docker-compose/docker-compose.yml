@@ -1,31 +1,44 @@
 version: "3.5"
 services: 
-  mysql:
-    #image: mysql:5.7
-    build: mysql/
-    container_name: mysql-taller1
-    hostname: host-mysql-taller1
-    environment:
-      #MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql-root
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: taller1
-      MYSQL_USER: utaller1
-      MYSQL_PASSWORD: ptaller1
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - back_net
-    ports:
-      - "3306:3306"
+#  mysql:
+#    #image: mysql:5.7
+#    build: mysql/
+#    container_name: mysql-taller1
+#    hostname: host-mysql-taller1
+#    environment:
+#      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+#      MYSQL_DATABASE: taller1
+#      MYSQL_USER: utaller1
+#      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#      #- ./createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
+#    networks:
+#      - back_net
+#    ports:
+#      - "3306:3306"
+#    secrets:
+#      - db_password
 
   backend:
     build: backend/
     networks:
       - back_net
-    ports:
-     - "8080:8080"    
+#    ports:
+#     - "8080:8080"
+#    depends_on:
+#     - mysql
+
+  frontend:
+    build: frontend/
+    networks:
+      - back_net
+      - front_net
+#    ports:
+#     - "80:80"
     depends_on:
-     - mysql
+     - backend
+
 
 volumes:
   mysql_data:
@@ -33,4 +46,11 @@ volumes:
 networks:
   back_net:
     driver: bridge
+  front_net:
+    driver: bridge
+
+
+secrets:
+  db_password:
+    file: db_password.txt
 
