@@ -20,8 +20,8 @@ services:
       - back_net
     ports:
       - 3306:3306
-#    secrets:
-#      - db_password
+    secrets:
+      - db_password
 
 #  backend:
 #    build: backend/
