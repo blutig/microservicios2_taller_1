@@ -77,6 +77,8 @@ services:
       - logs_net
     ports:
       - 5000:5000
+      - 5043:5043
+      - 9600:9600
     volumes:
       - logstash_data:/home/app/logs
     depends_on:
