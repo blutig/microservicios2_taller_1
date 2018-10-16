@@ -1,4 +1,9 @@
 version: "3.5"
+
+#secrets:
+#  db_password:
+#    file: ./mysql/db_password.txt
+
 services:
   mysql:
     build: mysql/
@@ -7,97 +12,86 @@ services:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: taller1
       MYSQL_USER: utaller1
-      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+      #MYSQL_PASSWORD: ptaller1
+      MYSQL_PASSWORD_FILE: ./mysql/db_password.txt
     volumes:
       - mysql_data:/var/lib/mysql
-      #- ./mysql/createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
     networks:
       - back_net
     ports:
       - 3306:3306
-    secrets:
-      - db_password
+#    secrets:
+#      - db_password
 
-  backend:
-    build: backend/
-    environment:
-      ES_JAVA_OPTS: -Xms128m -Xmx256m
-    networks:
-      - back_net
-    depends_on:
-      - mysql
-
-  frontend:
-    build: frontend/
-    networks:
-      - front_net
-    ports:
-      - 80:80
-    depends_on:
-      - backend
-
-  balanceproxy:
-    build: balanceproxy/
-    container_name: cbp-taller1
-    environment:
-      ES_JAVA_OPTS: -Xms128m -Xmx256m
-    networks:
-      - back_net
-      - front_net
-    ports:
-      - 80:80
-      - 443:443
-    depends_on:
-      - frontend
-
-  elasticsearch:
-    image: elasticsearch:5.6.12-alpine
-    environment:
-      ES_JAVA_OPTS: -Xms128m -Xmx256m
-    networks: 
-      - logs_net
-    ports:
-      - 9200:9200
-      - 9300:9300
-
-  kibana:
-    image: kibana:5.6.12
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      ES_JAVA_OPTS: -Xms128m -Xmx256m
-    networks:
-      - logs_net
-    ports:
-      - 5601:5601
-    depends_on:
-      - elasticsearch
-
-  logstash:
-    build: logs/logstash/
-    environment:
-      ELASTICSEARCH_HOSTS: elasticsearch:9200
-      ES_JAVA_OPTS: -Xms128m -Xmx256m
-    networks:
-      - logs_net
-    ports:
-      - 5000:5000
-    volumes:
-      - logstash_data:/home/app/logs
-    depends_on:
-      - kibana
-
-#  logspout:
-#    image: gliderlabs/logspout:v3.2.6
-#    command: syslog://logstash:5000
-#    volumes:
-#      - logspout_data:/tmp/docker.sock'
+#  backend:
+#    build: backend/
+#    environment:
+#      ES_JAVA_OPTS: -Xms128m -Xmx256m
+#    networks:
+#      - back_net
 #    depends_on:
-#      - logstash
+#      - mysql
+#
+#  frontend:
+#    build: frontend/
+#    networks:
+#      - front_net
+#    depends_on:
+#      - backend
+#
+#  balanceproxy:
+#    build: balanceproxy/
+#    container_name: cbp-taller1
+#    environment:
+#      ES_JAVA_OPTS: -Xms128m -Xmx256m
+#    networks:
+#      - back_net
+#      - front_net
+#    ports:
+#      - 80:80
+#      - 443:443
+#    depends_on:
+#      - frontend
+
+#  elasticsearch:
+#    image: elasticsearch:5.6.12-alpine
+#    environment:
+#      ES_JAVA_OPTS: -Xms128m -Xmx256m
+#    networks: 
+#      - logs_net
+#    ports:
+#      - 9200:9200
+#      - 9300:9300
+#
+#  kibana:
+#    image: kibana:5.6.12
+#    environment:
+#      ELASTICSEARCH_URL: http://elasticsearch:9200
+#      ES_JAVA_OPTS: -Xms128m -Xmx256m
+#    networks:
+#      - logs_net
+#    ports:
+#      - 5601:5601
+#    depends_on:
+#      - elasticsearch
+#
+#  logstash:
+#    build: logs/logstash/
+#    environment:
+#      ELASTICSEARCH_HOSTS: elasticsearch:9200
+#      ES_JAVA_OPTS: -Xms128m -Xmx256m
+#    networks:
+#      - logs_net
+#    ports:
+#      - 5000:5000
+#    volumes:
+#      - logstash_data:/home/app/logs
+#    depends_on:
+#      - kibana
 
 
 volumes:
   mysql_data:
-#  logspout_data:
   logstash_data:
 
 
@@ -108,9 +102,4 @@ networks:
     driver: bridge
   front_net:
     driver: bridge
-
-
-secrets:
-  db_password:
-    file: ./mysql/db_password.txt
 
