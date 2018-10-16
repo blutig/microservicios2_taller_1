@@ -1,8 +1,8 @@
 version: "3.5"
 
-#secrets:
-#  db_password:
-#    file: ./mysql/db_password.txt
+secrets:
+  db_password:
+    file: ./mysql/db_password.txt
 
 services:
   mysql:
@@ -13,7 +13,7 @@ services:
       MYSQL_DATABASE: taller1
       MYSQL_USER: utaller1
       #MYSQL_PASSWORD: ptaller1
-      MYSQL_PASSWORD_FILE: ./mysql/db_password.txt
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
