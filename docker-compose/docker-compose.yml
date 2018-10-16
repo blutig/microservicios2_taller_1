@@ -82,11 +82,9 @@ services:
     depends_on:
       - kibana
 
-
 volumes:
   mysql_data:
   logstash_data:
-
 
 networks:
   logs_net:
@@ -95,4 +93,3 @@ networks:
     driver: bridge
   front_net:
     driver: bridge
-
