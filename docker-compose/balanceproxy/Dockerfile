@@ -7,6 +7,4 @@ RUN apk add openssl --no-cache \
 	&& mkdir -p /etc/nginx/ssl/
 WORKDIR /etc/nginx/ssl/
 
-#rsa:4096
-#rsa:2048
-RUN openssl req -subj '/CN=localhost' -x509 -nodes -days 365 -newkey rsa:2048 -keyout nginx.key -out nginx.crt
+RUN openssl req -subj '/CN=localhost' -x509 -nodes -days 365 -newkey rsa:4096 -keyout nginx.key -out nginx.crt

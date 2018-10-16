@@ -1,61 +1,109 @@
 version: "3.5"
 services:
-#  mysql:
-#    #image: mysql:5.7
-#    build: mysql/
-#    container_name: cmysql-taller1
-#    environment:
-#      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-#      MYSQL_DATABASE: taller1
-#      MYSQL_USER: utaller1
-#      MYSQL_PASSWORD_FILE: /run/secrets/db_password
-#    volumes:
-#      - mysql_data:/var/lib/mysql
-#      #- ./createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
-#    networks:
-#      - back_net
-#    ports:
-#      - "3306:3306"
-#    secrets:
-#      - db_password
+  mysql:
+    build: mysql/
+    container_name: cmysql-taller1
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: taller1
+      MYSQL_USER: utaller1
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      #- ./mysql/createDB.sql:/docker-entrypoint-initdb.d/createDB.sql
+    networks:
+      - back_net
+    ports:
+      - 3306:3306
+    secrets:
+      - db_password
 
   backend:
     build: backend/
+    environment:
+      ES_JAVA_OPTS: -Xms128m -Xmx256m
     networks:
       - back_net
-#    depends_on:
-#      - mysql
+    depends_on:
+      - mysql
 
   frontend:
     build: frontend/
     networks:
       - front_net
+    ports:
+      - 80:80
     depends_on:
       - backend
-
-
-#https://dev.to/domysee/setting-up-a-reverse-proxy-with-nginx-and-docker-compose-29jg
-#https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx
 
   balanceproxy:
     build: balanceproxy/
     container_name: cbp-taller1
+    environment:
+      ES_JAVA_OPTS: -Xms128m -Xmx256m
     networks:
       - back_net
       - front_net
     ports:
-      - "80:80"
-      - "443:443"
+      - 80:80
+      - 443:443
     depends_on:
       - frontend
+
+  elasticsearch:
+    image: elasticsearch:5.6.12-alpine
+    environment:
+      ES_JAVA_OPTS: -Xms128m -Xmx256m
+    networks: 
+      - logs_net
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  kibana:
+    image: kibana:5.6.12
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ES_JAVA_OPTS: -Xms128m -Xmx256m
+    networks:
+      - logs_net
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+
+  logstash:
+    build: logs/logstash/
+    environment:
+      ELASTICSEARCH_HOSTS: elasticsearch:9200
+      ES_JAVA_OPTS: -Xms128m -Xmx256m
+    networks:
+      - logs_net
+    ports:
+      - 5000:5000
+    volumes:
+      - logstash_data:/home/app/logs
+    depends_on:
+      - kibana
+
+#  logspout:
+#    image: gliderlabs/logspout:v3.2.6
+#    command: syslog://logstash:5000
+#    volumes:
+#      - logspout_data:/tmp/docker.sock'
+#    depends_on:
+#      - logstash
 
 
 volumes:
   mysql_data:
-#  logs_data:
+#  logspout_data:
+  logstash_data:
 
 
 networks:
+  logs_net:
+    driver: bridge
   back_net:
     driver: bridge
   front_net:
@@ -64,5 +112,5 @@ networks:
 
 secrets:
   db_password:
-    file: db_password.txt
+    file: ./mysql/db_password.txt
 
