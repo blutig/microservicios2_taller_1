@@ -9,12 +9,12 @@ services:
       MYSQL_DATABASE: taller1
       MYSQL_USER: utaller1
       MYSQL_PASSWORD_FILE: /run/secrets/db_password
-    volumes:
-      - mysql_data:/var/lib/mysql
     networks:
       - back_net
     ports:
       - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
 
   backend:
     build: backend/
@@ -80,13 +80,13 @@ services:
       - 5043:5043
       - 9600:9600
     volumes:
-      - logstash_data:/home/app/logs
+      - logstash_log:/home/app/logs
     depends_on:
       - kibana
 
 volumes:
   mysql_data:
-  logstash_data:
+  logstash_log:
 
 networks:
   logs_net:

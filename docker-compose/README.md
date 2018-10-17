@@ -2,4 +2,4 @@
 
 Participantes:
 
-Andrea Gallego y Germ·n Vel·squez
+Andrea Gallego y Germ√°n Vel√°squez
